@@ -3,7 +3,9 @@ import Navbar from "../Navbar/Navbar";
 import Map from "@arcgis/core/Map";
 import MapView from "@arcgis/core/views/MapView";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
-import Widgets from "../Widgets";
+import Widgets from "../Widgets/Widgets";
+import Buttons from "../Buttons/Buttons";
+
 
 import "./Maps.css";
 
@@ -15,13 +17,13 @@ const Maps = () => {
   useEffect(() => {
     if (effectRun.current === false) {
       const map = new Map({
-        basemap: "gray-vector",
+        basemap: "hybrid",
       });
 
       const view = new MapView({
         container: mapRef.current,
         map: map,
-        zoom: 18,
+        zoom: 17,
         center: [-77.60688884872243, 43.1585128643808],
       });
 
@@ -41,13 +43,13 @@ const Maps = () => {
   return (
     <>
       <div className="map-container">
-        <Navbar />
         <div
           className="map-wrapper"
           style={{ height: "100%", width: "100%" }}
           ref={mapRef}
         >
           {view && <Widgets view={view} />}
+          {view && <Buttons view={view} />}
         </div>
       </div>
     </>

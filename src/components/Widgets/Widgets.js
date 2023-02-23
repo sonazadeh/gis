@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import Home from "@arcgis/core/widgets/Home";
-import ScaleBar from "@arcgis/core/widgets/ScaleBar";
 import Search from "@arcgis/core/widgets/Search";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
+import Expand from '@arcgis/core/widgets/Expand';
+import './Widgets.css';
+
 
 const Widgets = ({ view }) => {
   const widgetRef = useRef(null);
@@ -13,29 +15,39 @@ const Widgets = ({ view }) => {
     });
     view.ui.add(home, "top-left");
 
-    const scaleBar = new ScaleBar({
-      view,
-      container: widgetRef.current,
-    });
-    view.ui.add(scaleBar, "bottom-left");
-
     const search = new Search({
       view,
       container: widgetRef.current,
     });
-    view.ui.add(search, "top-right");
+    view.ui.add(search, {
+      index:1,
+      position:'top-left'
+    });
+
+  
 
     const basemapGallery = new BasemapGallery({
       view,
       container: widgetRef.current,
     });
-    view.ui.add(basemapGallery, "bottom-right");
+
+    const expand = new Expand({
+      view: view,
+      content: basemapGallery,
+      expandIconClass: 'esri-icon-basemap',
+      group: 'top-right'
+    });
+    
+    view.ui.add(expand, 'bottom-left');
+
+
 
     return () => {
       home.destroy();
-      scaleBar.destroy();
       search.destroy();
       basemapGallery.destroy();
+      expand.destroy();
+     
     };
   }, [view]);
 

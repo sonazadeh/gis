@@ -1,0 +1,53 @@
+.esri-search{
+    width: 400px;
+    padding: 4px 2px;
+    border-radius: 4px;
+  
+} 
+
+.esri-search:has(:focus){
+    outline: 2px solid #ffd633;
+}
+
+.esri-search__input:focus{
+    border: none;
+    outline: none;
+   
+}
+
+.esri-search__suggestions-menu{
+    display: none;
+}
+
+.esri-expand {
+    padding: 4px;
+    border-radius: 50%;
+}
+.esri-expand__mask{
+    border-radius: 50%;
+    background-color:transparent;
+}
+
+.esri-expand__container .esri-widget--button{
+    border-radius: 50%;
+}
+
+.esri-expand__panel{
+    border-radius: 50%;
+
+}
+
+
+
+
+
+.esri-component.esri-home.esri-widget--button.esri-widget{
+ 
+    border-radius: 50%;
+}
+
+.esri-icon.esri-icon-home{
+    padding: 8px;
+    background-color: #fff;
+
+}
