@@ -1,53 +1,97 @@
-.esri-search{
-    width: 400px;
-    padding: 4px 2px;
-    border-radius: 4px;
-  
-} 
-
-.esri-search:has(:focus){
-    outline: 2px solid #ffd633;
+.esri-search {
+  width: 400px;
+  padding: 4px 2px;
+  border-radius: 4px;
 }
 
-.esri-search__input:focus{
-    border: none;
-    outline: none;
-   
+.esri-search:has(:focus) {
+  outline: 2px solid #ffd633;
 }
 
-.esri-search__suggestions-menu{
-    display: none;
+.esri-search__input:focus {
+  border: none;
+  outline: none;
+}
+
+.esri-search__suggestions-menu {
+  display: none;
 }
 
 .esri-expand {
-    padding: 4px;
-    border-radius: 50%;
+  padding: 4px;
+  border-radius: 50%;
 }
-.esri-expand__mask{
-    border-radius: 50%;
-    background-color:transparent;
-}
-
-.esri-expand__container .esri-widget--button{
-    border-radius: 50%;
+.esri-expand__mask {
+  border-radius: 50%;
+  background-color: transparent;
 }
 
-.esri-expand__panel{
-    border-radius: 50%;
-
+.esri-expand__container .esri-widget--button {
+  border-radius: 50%;
 }
 
-
-
-
-
-.esri-component.esri-home.esri-widget--button.esri-widget{
- 
-    border-radius: 50%;
+.esri-expand__panel {
+  border-radius: 50%;
 }
 
-.esri-icon.esri-icon-home{
-    padding: 8px;
-    background-color: #fff;
+.esri-component.esri-home.esri-widget--button.esri-widget {
+  border-radius: 50%;
+}
 
+.esri-icon.esri-icon-home {
+  padding: 8px;
+  background-color: #fff;
+}
+
+#layersMenu {
+  background-color: #fff;
+  width: 250px;
+  height: fit-content;
+  border-radius: 4px;
+  box-shadow: rgb(0 0 0 / 10%) 0px 0px 0px 1px, rgb(0 0 0 / 5%) 0px 3px 0px 0px;
+}
+
+.layers-list {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding-inline-start: 0;
+}
+
+.layers-list li {
+  list-style-type: none;
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+  padding: 5px 20px;
+  color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 13px;
+  transition: all 0.2s ease-in-out;
+}
+
+.layers-list li:hover {
+  background-color: #ffeb99;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #000;
+}
+
+.layers-img {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+}
+.layers-list li.active {
+  cursor: pointer;
+  color: #000;
+}
+
+#measurementDiv {
+  padding: 5px 10px;
 }

@@ -73,6 +73,8 @@ const Buttons = ({ view }) => {
       </div>
       <button id="profile-button" className="esri-icon-user"></button>
     </div>
+
+    
     </div>
   )
 }
