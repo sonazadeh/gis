@@ -95,3 +95,9 @@
 #measurementDiv {
   padding: 5px 10px;
 }
+
+li.active {
+  cursor: pointer;
+  color: #000;
+}
+
