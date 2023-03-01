@@ -1,24 +1,24 @@
-import { useEffect, useRef,useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Home from "@arcgis/core/widgets/Home";
 import Search from "@arcgis/core/widgets/Search";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import Expand from "@arcgis/core/widgets/Expand";
 import Measurement from "@arcgis/core/widgets/Measurement.js";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 
 import "./Widgets.css";
 
-const Widgets = ({ view, map, buildingLayer, lineLayer, pointLayer }) => {
-  // const { view, map, buildingLayer, lineLayer, pointLayer } = props;
-
-  console.log("widget props view", view);
-  console.log("widget props map", view.map);
-  console.log("widget props buildingLayer", view.map.buildingLayer);
+const Widgets = ({ view }) => {
 
   const widgetRef = useRef(null);
   const layersMenuRef = useRef(null); // create a ref for the layersMenu container
   const measurementDivRef = useRef(null); // create a ref for the layersMenu container
 
- 
+  const [showPolygon, setShowPolygon] = useState(false);
+  const [showPolyline, setShowPolyline] = useState(false);
+  const [showPoint, setShowPoint] = useState(false);
+
+  
   useEffect(() => {
     const home = new Home({
       view,
@@ -62,6 +62,8 @@ const Widgets = ({ view, map, buildingLayer, lineLayer, pointLayer }) => {
       view: view,
     });
 
+    view.ui.add(measurement, "bottom-right");
+
     const measurementExpand = new Expand({
       expandIconClass: "esri-icon-measure",
       view: view,
@@ -73,15 +75,17 @@ const Widgets = ({ view, map, buildingLayer, lineLayer, pointLayer }) => {
     const areaButton = document.getElementById("area");
     const clearButton = document.getElementById("clear");
 
-    distanceButton.addEventListener("click", () => {
-      distanceMeasurement();
-    });
-    areaButton.addEventListener("click", () => {
-      areaMeasurement();
-    });
-    clearButton.addEventListener("click", () => {
-      clearMeasurements();
-    });
+    if (distanceButton && areaButton && clearButton) {
+      distanceButton.addEventListener("click", () => {
+        distanceMeasurement();
+      });
+      areaButton.addEventListener("click", () => {
+        areaMeasurement();
+      });
+      clearButton.addEventListener("click", () => {
+        clearMeasurements();
+      });
+    }
 
     // Call the appropriate DistanceMeasurement2D or DirectLineMeasurement3D
     function distanceMeasurement() {
@@ -104,42 +108,6 @@ const Widgets = ({ view, map, buildingLayer, lineLayer, pointLayer }) => {
       measurement.clear();
     }
 
-    const polygonId = document.getElementById("polygon");
-    const polylineId = document.getElementById("polyline");
-    const pointId = document.getElementById("point");
-
-    polygonId.addEventListener("click", function () {
-      if (this.classList.contains("active")) {
-        this.classList.remove("active");
-        map.remove(buildingLayer);
-      } else {
-        this.classList.add("active");
-        map.add(buildingLayer);
-      }
-    });
-
-    polylineId.addEventListener("click", function () {
-      if (this.classList.contains("active")) {
-        this.classList.remove("active");
-        map.remove(lineLayer);
-      } else {
-        this.classList.add("active");
-        map.add(lineLayer);
-      }
-    });
-
-    pointId.addEventListener("click", function () {
-      if (this.classList.contains("active")) {
-        this.classList.remove("active");
-        map.remove(pointLayer);
-      } else {
-        this.classList.add("active");
-        map.add(pointLayer);
-      }
-    });
-
-  
-   
     return () => {
       home.destroy();
       search.destroy();
@@ -147,12 +115,72 @@ const Widgets = ({ view, map, buildingLayer, lineLayer, pointLayer }) => {
       expand.destroy();
       expandLayers.destroy();
       measurementExpand.destroy();
+      measurement.destroy();
       distanceButton.removeEventListener("click", distanceMeasurement);
       areaButton.removeEventListener("click", areaMeasurement);
       clearButton.removeEventListener("click", clearMeasurements);
     };
   }, [view]);
 
+  const buildingLayer = new FeatureLayer({
+    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/arcgis/rest/services/DevSummit_Polygons_Layer/FeatureServer/0",
+    outFields: ["*"],
+    spatialReference: "3857",
+    objectIdField: "OBJECTID",
+    geometryType: "polygon",
+    outSpatialReference: { wkid: 3857 },
+    returnGeometry: true,
+  });
+  
+  const lineLayer = new FeatureLayer({
+    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/1",
+    outFields: ["*"],
+    spatialReference: "3857",
+    objectIdField: "OBJECTID",
+    geometryType: "polyline",
+    outSpatialReference: { wkid: 3857 },
+    returnGeometry: true,
+  });
+  
+  const pointLayer = new FeatureLayer({
+    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/0",
+    outFields: ["*"],
+    spatialReference: "3857",
+    objectIdField: "OBJECTID",
+    geometryType: "point",
+    outSpatialReference: { wkid: 3857 },
+    returnGeometry: true,
+  });
+
+
+  const handleShowPolygon = () => {
+    setShowPolygon(!showPolygon);
+    if (!showPolygon) {
+      view.map.add(buildingLayer);
+    } else {
+      view.map.removeAll([buildingLayer]);
+    }
+  };
+
+  const handleShowPolyline = () => {
+    setShowPolyline(!showPolyline);
+    if (!showPolyline) {
+      view.map.add(lineLayer);
+    } else {
+      view.map.remove(lineLayer);
+    }
+  };
+
+  const handleShowPoint = () => {
+    setShowPoint(!showPoint);
+    if (!showPoint) {
+      view.map.add(pointLayer);
+    } else {
+      view.map.remove(pointLayer);
+    }
+  };
+
+  
   return (
     <>
       <div id="layersMenu" ref={layersMenuRef}>
@@ -160,21 +188,27 @@ const Widgets = ({ view, map, buildingLayer, lineLayer, pointLayer }) => {
         {/* assign the ref to the container */}
         <div id="layers-container">
           <ul className="layers-list">
-            <li className=" layers-item" id="polygon">
+            <li
+              className={showPolygon ? "layers-item active" : "layers-item"}
+              onClick={handleShowPolygon}
+              id="polygon"
+            >
               <span>
                 {" "}
-                <img className="layers-img"  src="img/home.svg" />{" "}
+                <img className="layers-img" src="img/home.svg" />{" "}
               </span>
               Polygon
             </li>
-            <li className="layers-item " id="point">
+            <li className={showPoint ? "layers-item active" : "layers-item"}
+              onClick={handleShowPoint} id="point">
               <span>
                 {" "}
                 <img className="layers-img" src="img/location.svg" />{" "}
               </span>
               Point
             </li>
-            <li className="layers-item " id="polyline">
+            <li className={showPolyline ? "layers-item active" : "layers-item"}
+              onClick={handleShowPolyline} id="polyline">
               <span>
                 {" "}
                 <img className="layers-img" src="img/road.svg" />{" "}
