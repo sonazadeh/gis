@@ -3,10 +3,8 @@ import Map from "@arcgis/core/Map";
 import MapView from "@arcgis/core/views/MapView";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import Widgets from "../Widgets/Widgets";
-import Buttons from "../Buttons/Buttons";
-import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
-
-
+import Draw from "../Draw/Draw";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 
 import "./Maps.css";
 
@@ -15,10 +13,17 @@ const Maps = () => {
   const effectRun = useRef(false);
   const [view, setView] = useState(null);
   
-  const map = new Map({
-    basemap: "hybrid",
+  const gLayer = new GraphicsLayer({
+    visible: true,
   });
 
+  
+  const map = new Map({
+    basemap: "hybrid",
+    layers:[gLayer],
+  });
+
+ 
   useEffect(() => {
 
     
@@ -36,15 +41,38 @@ const Maps = () => {
         setView(view);
       });
 
-      const gLayer = new GraphicsLayer({
-        visible: true,
-      });
-
-      map.add(gLayer);
-      effectRun.current = true;
-     
     }
   }, []);
+
+  const buildingLayer = new FeatureLayer({
+    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/arcgis/rest/services/DevSummit_Polygons_Layer/FeatureServer/0",
+    outFields: ["*"],
+    spatialReference: "3857",
+    objectIdField: "OBJECTID",
+    geometryType: "polygon",
+    outSpatialReference: { wkid: 3857 },
+    returnGeometry: true,
+  });
+  
+  const lineLayer = new FeatureLayer({
+    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/1",
+    outFields: ["*"],
+    spatialReference: "3857",
+    objectIdField: "OBJECTID",
+    geometryType: "polyline",
+    outSpatialReference: { wkid: 3857 },
+    returnGeometry: true,
+  });
+  
+  const pointLayer = new FeatureLayer({
+    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/0",
+    outFields: ["*"],
+    spatialReference: "3857",
+    objectIdField: "OBJECTID",
+    geometryType: "point",
+    outSpatialReference: { wkid: 3857 },
+    returnGeometry: true,
+  });
 
 
   return (
@@ -55,8 +83,9 @@ const Maps = () => {
           style={{ height: "100%", width: "100%" }}
           ref={mapRef}
         >
-          {view && <Widgets view={view} />}
-          {view && <Buttons view={view} />}
+        
+          {view && <Widgets view={view} buildingLayer={buildingLayer} lineLayer={lineLayer} pointLayer={pointLayer} />}
+          {view && <Draw view={view} buildingLayer={buildingLayer} lineLayer={lineLayer} pointLayer={pointLayer} gLayer={gLayer} />}
         </div>
       </div>
     </>
