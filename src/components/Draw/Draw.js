@@ -1,10 +1,10 @@
 import React from 'react';
 import * as geometryEngine from "@arcgis/core/geometry/geometryEngine.js";
-import Expand from '@arcgis/core/widgets/Expand';
 import  { useEffect, useRef, useState } from "react";
 import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel.js";
 import Graphic from "@arcgis/core/Graphic.js";
-import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol.js";
+import {AiFillDelete} from 'react-icons/ai';
+import {BsSave} from 'react-icons/bs';
 
 
 
@@ -19,6 +19,16 @@ function Draw({view ,buildingLayer,pointLayer,lineLayer,gLayer}) {
     let editFeature = null;
    
     const highlight = useRef(null);
+    var willsendData = {status:false,feature:null};
+
+    const createDraw = () =>{
+      if(willsendData.status==false){
+       
+        buildingLayer.applyEdits({ addFeatures: [willsendData.feature] });
+        willsendData = {status:false,feature:null};
+      }
+    }
+
 
   useEffect(() => {
     const sketchVM = new SketchViewModel({
@@ -32,14 +42,33 @@ function Draw({view ,buildingLayer,pointLayer,lineLayer,gLayer}) {
     const pointBtn = document.getElementById("pointBtn");
     const polylineBtn = document.getElementById("polylineBtn");
 
+    
     sketchVM.on("create", (event) => {
 
-      if (event.state === "complete") {
-       
-        if (event.tool === "polygon") {
-          gLayer.remove(event.graphic);
-          buildingLayer.applyEdits({ addFeatures: [event.graphic] });
-        }
+        const createButton = document.getElementById("create-button");
+        const createDelete = document.getElementById("create-delete");
+        const createMenu=document.getElementById("create-menu");
+
+      if (event.state === "active") {
+
+        // Hide the create button
+        createButton.style.display = "none";
+        // Show the delete button
+        createDelete.style.display = "flex";
+        // Hide the create button
+        createMenu.style.display = "none";  
+      }
+     
+
+
+      if (event.state === "complete" ) {
+
+      
+          if (event.tool === "polygon") {
+           
+            willsendData.feature = event.graphic
+          }
+        
         if (event.tool === "point") {
           gLayer.remove(event.graphic);
           pointLayer.applyEdits({ addFeatures: [event.graphic] });
@@ -79,8 +108,6 @@ function Draw({view ,buildingLayer,pointLayer,lineLayer,gLayer}) {
               console.error("Error in cut operation", error);
             });
         }}
-
-      
     });
 
     buildingBtn.onclick = () => sketchVM.create("polygon");
@@ -88,56 +115,6 @@ function Draw({view ,buildingLayer,pointLayer,lineLayer,gLayer}) {
     cutBtn.onclick = () => sketchVM.create("polyline");
     polylineBtn.onclick = () => sketchVM.create("polyline");
 
-
-    view.on("click", (event) => {
-
-      // check if click has features underneath
-      view.hitTest(event).then((hitTest) => {
-        const [first] = hitTest.results;
-
-        if (first) {
-          selectFeature(
-            first.graphic.attributes[buildingLayer.objectIdField],
-            first.graphic.geometry
-          );
-          return;
-        }
-
-        // updateContainer.classList.add("esri-hidden");
-      });
-    });
-
-
-    function selectFeature(objectId, geom) {
-      buildingLayer
-        .queryFeatures({
-          objectIds: [objectId],
-          outFields: ["*"],
-        })
-        .then(({ features }) => {
-          if (features.length === 0) {
-            return;
-          }
-
-          [editFeature] = features;
-          selectedFeture = geom;
-
-          
-          // highlight selected feature
-          view.whenLayerView(editFeature.layer).then((layerView) => {
-              highlight.current = layerView.highlight(editFeature);
-
-          });
-         
-        });
-    }
-
-    function unselectFeature() {
-      if (highlight.current) {
-        highlight.current.remove();
-        highlight.current = null;
-      }
-    }
     
     // Cleanup function to remove event listeners and destroy sketchVM instance
     return () => {
@@ -153,6 +130,11 @@ function Draw({view ,buildingLayer,pointLayer,lineLayer,gLayer}) {
   <div className="top-menu">
  <div className="create ">
    <button id="create-button" onClick={handleShowCreate}>Create</button>
+  <div id='create-delete'>
+  <button id="create-draw" onClick={createDraw} ><BsSave/></button>
+  <button id="delete-draw" ><AiFillDelete/></button>
+  </div>
+
    <div id="create-menu" className={showCreate ? "" :'hidden'}>
      <div className="button-title">What do you want to create?</div>
      <div id="button-container">

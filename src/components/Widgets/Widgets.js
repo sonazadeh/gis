@@ -5,6 +5,8 @@ import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import Expand from "@arcgis/core/widgets/Expand";
 import Measurement from "@arcgis/core/widgets/Measurement.js";
 
+
+
 import "./Widgets.css";
 
 const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
@@ -19,7 +21,6 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
   if(layer_visiblty==null){
     localStorage.setItem('layer_visiblty',JSON.stringify(sample));
   }else{
-    
     sample=JSON.parse(layer_visiblty);
   }
 
@@ -27,9 +28,10 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
   const layersMenuRef = useRef(null); // create a ref for the layersMenu container
   const measurementDivRef = useRef(null); // create a ref for the layersMenu container
 
-  const [showPolygon, setShowPolygon] = useState(false);
-  const [showPolyline, setShowPolyline] = useState(false);
-  const [showPoint, setShowPoint] = useState(false);
+  const [showPolygon, setShowPolygon] = useState(sample.showPolygon);
+  const [showPolyline, setShowPolyline] = useState(sample.showPolyline);
+  const [showPoint, setShowPoint] = useState(sample.showPoint);
+
   
   useEffect(() => {
     const home = new Home({
@@ -120,7 +122,6 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
       measurement.clear();
     }
 
-
     return () => {
       home.destroy();
       search.destroy();
@@ -137,16 +138,14 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
 
  
   const handleShowPolygon = () => {
-    debugger;
     setShowPolygon(!showPolygon);
   
     if (!showPolygon) {
-      sample.showPolygon = true;
       view.map.add(buildingLayer);
+      sample.showPolygon = true;
     } else {
-      sample.showPolygon = false;
       view.map.remove(buildingLayer);
-     
+      sample.showPolygon = false;
     }
   
     localStorage.setItem('layer_visiblty', JSON.stringify(sample));
@@ -156,18 +155,25 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
     setShowPolyline(!showPolyline);
     if (!showPolyline) {
       view.map.add(lineLayer);
+      sample.showPolyline = true;
     } else {
       view.map.remove(lineLayer);
+      sample.showPolyline = false;
+     
     }
+    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
   };
 
   const handleShowPoint = () => {
     setShowPoint(!showPoint);
     if (!showPoint) {
       view.map.add(pointLayer);
+      sample.showPoint = true;
     } else {
       view.map.remove(pointLayer);
+      sample.showPoint = false;
     }
+    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
   };
 
   
