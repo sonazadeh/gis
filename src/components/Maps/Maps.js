@@ -18,6 +18,7 @@ const Maps = () => {
   });
 
   
+  
   const map = new Map({
     basemap: "hybrid",
     layers:[gLayer],
