@@ -6,13 +6,16 @@ import Graphic from "@arcgis/core/Graphic.js";
 import { AiFillDelete } from "react-icons/ai";
 import { BsSave } from "react-icons/bs";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
+import SimpleLineSymbol from "@arcgis/core/symbols/SimpleLineSymbol.js";
+import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol.js";
+
 
 import "./Draw.css";
 
 function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
   const [showCreate, setShowCreate] = useState(false);
-  const handleShowCreate = (status) => {
-    setShowCreate(status);
+  const handleShowCreate = () => {
+    setShowCreate(!showCreate);
   };
   var drawedLayer = new GraphicsLayer({
     visible: true,
@@ -21,7 +24,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
   var editFeature = null;
 
   const highlight = useRef(null);
-  var willsendData = {status:false,type:'',feature:null};
+  var willsendData = { status: false, type: "", feature: null };
 
   const polygonSymbol = {
     type: "simple-fill",
@@ -30,6 +33,20 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
       color: [255, 255, 255],
       width: 2,
     },
+  };
+
+  const pointSymbol = {
+    type: "simple-marker",
+    color: "#ef5350", // marker color
+    size: 10, // marker size
+  };
+
+
+  const lineSymbol =  {
+    type: "simple-line",  // autocasts as new SimpleLineSymbol()
+    color: "lightblue",
+    width: "2px",
+    style: "short-dot"
   };
 
   useEffect(() => {
@@ -55,19 +72,38 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
     createDraw.addEventListener("click", function () {
       debugger;
       if (willsendData.type === "polygon") {
-        if(willsendData.status==false){
+        if (willsendData.status == false) {
           gLayer.removeAll();
           drawedLayer.removeAll();
           buildingLayer.applyEdits({ addFeatures: [willsendData.feature] });
-          willsendData = {status:false,type:'',feature:null};
+          willsendData = { status: false, type: "", feature: null };
+        }
+      } else if (willsendData.type === "point") {
+        if (willsendData.status == false) {
+          gLayer.removeAll();
+          drawedLayer.removeAll();
+          pointLayer.applyEdits({ addFeatures: [willsendData.feature] });
+          willsendData = { status: false, type: "", feature: null };
+        }
+      } else if (willsendData.type === "polyline") {
+        if (willsendData.status == false) {
+          gLayer.removeAll();
+          drawedLayer.removeAll();
+          lineLayer.applyEdits({ addFeatures: [willsendData.feature] });
+          willsendData = { status: false, type: "", feature: null };
         }
       }
-      console.log('created');
+
+      console.log("created");
+
+      // show the create button
+      createButton.style.display = "block";
+      // hide the delete button
+      createDelete.style.display = "none";
     });
 
     sketchVM.on("create", (event) => {
       willsendData.type = event.tool;
-      
 
       if (event.state === "active") {
         // Hide the create button
@@ -78,31 +114,32 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
 
       if (event.state === "complete") {
         debugger;
-        // show the create button
-        createButton.style.display = "none";
-        // hide the delete button
-        createDelete.style.display = "flex";
 
         willsendData.status = false;
         willsendData.feature = event.graphic;
+
         var polygonGraphic = new Graphic({
           geometry: willsendData.feature.geometry,
-          symbol: polygonSymbol
+          symbol: polygonSymbol,
         });
         drawedLayer.add(polygonGraphic);
+
+
+        var pointGraphic = new Graphic({
+          geometry: willsendData.feature.geometry,
+          symbol: pointSymbol
+        });
+
+        drawedLayer.add(pointGraphic);
+
+        var polylineGraphic = new Graphic({
+          geometry: willsendData.feature.geometry,
+          symbol: lineSymbol,
+        });
+
+        drawedLayer.add(polylineGraphic);
+
         view.map.add(drawedLayer);
-      
-
-        
-        if (event.tool === "point") {
-          gLayer.remove(event.graphic);
-          pointLayer.applyEdits({ addFeatures: [event.graphic] });
-        }
-
-        if (event.tool === "polyline" && selectedFeture === null) {
-          gLayer.remove(event.graphic);
-          lineLayer.applyEdits({ addFeatures: [event.graphic] });
-        }
 
         if (event.tool === "polyline" && selectedFeture !== null) {
           const geometrys = geometryEngine.cut(
@@ -135,12 +172,8 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
             });
         }
       }
-
       // remove event listener after polygon is added to layer
-      createDraw.removeEventListener("click",function(){
- 
-      });
-
+      createDraw.removeEventListener("click", function () {});
     });
 
     // Cleanup function to remove event listeners and destroy sketchVM instance
@@ -157,7 +190,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
     <>
       <div className="top-menu">
         <div className="create">
-          <button id="create-button" onClick={()=>handleShowCreate(true)}>
+          <button id="create-button" onClick={handleShowCreate}>
             Create
           </button>
           <div id="create-delete">

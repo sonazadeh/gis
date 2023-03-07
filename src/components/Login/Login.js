@@ -4,6 +4,10 @@ import { Link } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
+  const consoleF = (data) => {
+    console.log(data);
+  };
+
   return (
     <div className="container">
       <div className="login-wrapper ">
@@ -50,11 +54,15 @@ const Login = () => {
             </div>
           </form>
           <a href="/forget-password">Şifrəni unutmusan?</a>
-          <Link to="/">
-            <button type="submit" className="form-button">
-              Daxil ol
-            </button>
-          </Link>
+          {/* <Link to="/"> */}
+          <button
+            type="submit"
+            className="form-button"
+            onClick={() => consoleF("Salam")}
+          >
+            Daxil ol
+          </button>
+          {/* </Link> */}
           <p>Daxil ol © 2022. Bütün hüquqlar qorunur.</p>
         </div>
         <div className="login-right">
@@ -64,5 +72,4 @@ const Login = () => {
     </div>
   );
 };
-
 export default Login;

@@ -31,8 +31,64 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
   const [showPolygon, setShowPolygon] = useState(sample.showPolygon);
   const [showPolyline, setShowPolyline] = useState(sample.showPolyline);
   const [showPoint, setShowPoint] = useState(sample.showPoint);
+  var moment1 = true;
 
-  
+  const showHidePolygon = (layerName,status)=>{
+    debugger;
+    switch(layerName){
+      case 'polygon':{
+        setShowPolygon(status);
+        if (status) {
+          view.map.add(buildingLayer);
+          sample.showPolygon = true;
+        } else {
+          view.map.remove(buildingLayer);
+          sample.showPolygon = false;
+        }
+        break;
+      }
+    }
+    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
+  }
+
+  const showHidePoint = (layerName,status)=>{
+    debugger;
+    switch(layerName){
+      case 'point':{
+        setShowPoint(status);
+        if (status) {
+          view.map.add(pointLayer);
+          sample.showPoint = true;
+        } else {
+          view.map.remove(pointLayer);
+          sample.showPoint = false;
+        }
+        break;
+      }
+    }
+    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
+  }
+
+
+  const showHidePolyline = (layerName,status)=>{
+    debugger;
+    switch(layerName){
+      case 'polyline':{
+        setShowPolyline(status);
+        if (status) {
+          view.map.add(lineLayer);
+          sample.showPolyline = true;
+        } else {
+          view.map.remove(lineLayer);
+          sample.showPolyline = false;
+        }
+        break;
+      }
+    }
+    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
+  }
+
+
   useEffect(() => {
     const home = new Home({
       view,
@@ -122,6 +178,22 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
       measurement.clear();
     }
 
+    debugger;
+    if(moment1){
+      if(sample.showPolyline){
+        showHidePolyline('polyline',true);
+      }
+
+      if(sample.showPolygon){
+        showHidePolygon('polygon',true);
+      }
+      if(sample.showPoint){
+        showHidePoint('point',true);
+      }
+      moment1 = false;
+    }
+    
+
     return () => {
       home.destroy();
       search.destroy();
@@ -137,46 +209,7 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
   }, [view]);
 
  
-  const handleShowPolygon = () => {
-    setShowPolygon(!showPolygon);
-  
-    if (!showPolygon) {
-      view.map.add(buildingLayer);
-      sample.showPolygon = true;
-    } else {
-      view.map.remove(buildingLayer);
-      sample.showPolygon = false;
-    }
-  
-    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
-  };
-
-  const handleShowPolyline = () => {
-    setShowPolyline(!showPolyline);
-    if (!showPolyline) {
-      view.map.add(lineLayer);
-      sample.showPolyline = true;
-    } else {
-      view.map.remove(lineLayer);
-      sample.showPolyline = false;
-     
-    }
-    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
-  };
-
-  const handleShowPoint = () => {
-    setShowPoint(!showPoint);
-    if (!showPoint) {
-      view.map.add(pointLayer);
-      sample.showPoint = true;
-    } else {
-      view.map.remove(pointLayer);
-      sample.showPoint = false;
-    }
-    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
-  };
-
-  
+  debugger
   return (
     <>
       <div id="layersMenu" ref={layersMenuRef}>
@@ -187,7 +220,7 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
           
             <li
               className={showPolygon ? "layers-item active" : "layers-item"}
-              onClick={handleShowPolygon}
+              onClick={() => showHidePolygon('polygon',!sample.showPolygon)} 
               id="polygon"
             >
               <span>
@@ -197,7 +230,7 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
               Polygon
             </li>
             <li className={showPoint ? "layers-item active" : "layers-item"}
-              onClick={handleShowPoint} id="point">
+              onClick={() => showHidePoint('point',!sample.showPoint)}  id="point">
               <span>
                 {" "}
                 <img className="layers-img" src="img/location.svg" />{" "}
@@ -205,7 +238,7 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
               Point
             </li>
             <li className={showPolyline ? "layers-item active" : "layers-item"}
-              onClick={handleShowPolyline} id="polyline">
+              onClick={() => showHidePolyline('polyline',!sample.showPolyline)} id="polyline">
               <span>
                 {" "}
                 <img className="layers-img" src="img/road.svg" />{" "}

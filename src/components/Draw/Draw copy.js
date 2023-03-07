@@ -67,14 +67,20 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
 
     sketchVM.on("create", (event) => {
       willsendData.type = event.tool;
-      
+      debugger
 
-      if (event.state === "active") {
+      if (event.state === "active" ) {
         // Hide the create button
         createButton.style.display = "none";
         // Show the delete button
         createDelete.style.display = "flex";
+     
       }
+    
+      debugger
+    
+
+     
 
       if (event.state === "complete") {
         debugger;
