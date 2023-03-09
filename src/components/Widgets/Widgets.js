@@ -4,6 +4,7 @@ import Search from "@arcgis/core/widgets/Search";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import Expand from "@arcgis/core/widgets/Expand";
 import Measurement from "@arcgis/core/widgets/Measurement.js";
+import { Link } from "react-router-dom";
 
 
 
@@ -27,6 +28,7 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
   const widgetRef = useRef(null);
   const layersMenuRef = useRef(null); // create a ref for the layersMenu container
   const measurementDivRef = useRef(null); // create a ref for the layersMenu container
+  const serviceLayersDivRef = useRef(null);
 
   const [showPolygon, setShowPolygon] = useState(sample.showPolygon);
   const [showPolyline, setShowPolyline] = useState(sample.showPolyline);
@@ -119,6 +121,15 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
 
     view.ui.add(expand, "bottom-left");
 
+    const serviceLayers = new Expand({
+      view: view,
+      content: serviceLayersDivRef.current, // pass the ref to the layersMenu container
+      expandIconClass: "esri-icon-applications",
+      group: "top-right",
+    });
+
+    view.ui.add(serviceLayers, "bottom-left");
+
     const expandLayers = new Expand({
       view: view,
       content: layersMenuRef.current, // pass the ref to the layersMenu container
@@ -199,6 +210,7 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
       search.destroy();
       basemapGallery.destroy();
       expand.destroy();
+      serviceLayers.destroy()
       expandLayers.destroy();
       measurementExpand.destroy();
       measurement.destroy();
@@ -271,6 +283,27 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
           title="Clear Measurements"
         ></button>
       </div>
+
+
+     <div id="serviceLayers" ref={serviceLayersDivRef}>
+          <ul className="serviceLayers-list">
+            <Link to='/wms'>
+              <li className="serviceLayers-items">
+              Web Map Services (WMS).
+              </li>
+            </Link>
+            <Link to='/wmts'>
+              <li className="serviceLayers-items">
+              Web Map Tile Services (WMTS)
+              </li>
+            </Link>
+            <Link to='/vectorTileLayer'>
+              <li className="serviceLayers-items">
+              VectorTileLayer
+              </li>
+            </Link>
+          </ul>
+     </div>
     </>
   );
 };

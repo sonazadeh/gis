@@ -35,12 +35,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
     },
   };
 
-  const pointSymbol = {
-    type: "simple-marker",
-    color: "#ef5350", // marker color
-    size: 10, // marker size
-  };
-
+ 
 
   const lineSymbol =  {
     type: "simple-line",  // autocasts as new SimpleLineSymbol()
@@ -121,13 +116,16 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
         var polygonGraphic = new Graphic({
           geometry: willsendData.feature.geometry,
           symbol: polygonSymbol,
+         
+
         });
         drawedLayer.add(polygonGraphic);
 
 
         var pointGraphic = new Graphic({
           geometry: willsendData.feature.geometry,
-          symbol: pointSymbol
+        
+         
         });
 
         drawedLayer.add(pointGraphic);

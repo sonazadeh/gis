@@ -5,6 +5,9 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import Widgets from "../Widgets/Widgets";
 import Draw from "../Draw/Draw";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
+import Color from '@arcgis/core/Color';
+import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
+
 
 import "./Maps.css";
 
@@ -62,7 +65,7 @@ const Maps = () => {
     objectIdField: "OBJECTID",
     geometryType: "polyline",
     outSpatialReference: { wkid: 3857 },
-    returnGeometry: true,
+    returnGeometry: true,  
   });
   
   const pointLayer = new FeatureLayer({
