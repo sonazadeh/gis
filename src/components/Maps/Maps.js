@@ -5,6 +5,8 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import Widgets from "../Widgets/Widgets";
 import Draw from "../Draw/Draw";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
+import Color from "@arcgis/core/Color";
+import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
 
 import "./Maps.css";
 
@@ -12,25 +14,18 @@ const Maps = () => {
   const mapRef = useRef(null);
   const effectRun = useRef(false);
   const [view, setView] = useState(null);
-  
+
   const gLayer = new GraphicsLayer({
     visible: true,
   });
 
-  
-  
   const map = new Map({
     basemap: "hybrid",
-    layers:[gLayer],
+    layers: [gLayer],
   });
 
- 
   useEffect(() => {
-
-    
     if (effectRun.current === false) {
-      
-
       const view = new MapView({
         container: mapRef.current,
         map: map,
@@ -41,9 +36,14 @@ const Maps = () => {
       view.when((view) => {
         setView(view);
       });
-
     }
   }, []);
+
+  const typeField = {
+    name: "type",
+    alias: "Type",
+    type: "string",
+  };
 
   const buildingLayer = new FeatureLayer({
     url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/arcgis/rest/services/DevSummit_Polygons_Layer/FeatureServer/0",
@@ -53,8 +53,9 @@ const Maps = () => {
     geometryType: "polygon",
     outSpatialReference: { wkid: 3857 },
     returnGeometry: true,
+    fields: [typeField],
   });
-  
+
   const lineLayer = new FeatureLayer({
     url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/1",
     outFields: ["*"],
@@ -64,7 +65,7 @@ const Maps = () => {
     outSpatialReference: { wkid: 3857 },
     returnGeometry: true,
   });
-  
+
   const pointLayer = new FeatureLayer({
     url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/0",
     outFields: ["*"],
@@ -75,7 +76,6 @@ const Maps = () => {
     returnGeometry: true,
   });
 
-
   return (
     <>
       <div className="map-container">
@@ -84,9 +84,23 @@ const Maps = () => {
           style={{ height: "100%", width: "100%" }}
           ref={mapRef}
         >
-        
-          {view && <Widgets view={view} buildingLayer={buildingLayer} lineLayer={lineLayer} pointLayer={pointLayer} />}
-          {view && <Draw view={view} buildingLayer={buildingLayer} lineLayer={lineLayer} pointLayer={pointLayer} gLayer={gLayer} />}
+          {view && (
+            <Widgets
+              view={view}
+              buildingLayer={buildingLayer}
+              lineLayer={lineLayer}
+              pointLayer={pointLayer}
+            />
+          )}
+          {view && (
+            <Draw
+              view={view}
+              buildingLayer={buildingLayer}
+              lineLayer={lineLayer}
+              pointLayer={pointLayer}
+              gLayer={gLayer}
+            />
+          )}
         </div>
       </div>
     </>

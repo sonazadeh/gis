@@ -126,7 +126,6 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
 
         var pointGraphic = new Graphic({
           geometry: willsendData.feature.geometry,
-          geometry: "point", // replace with your polyline geometry
           symbol: pointSymbol,
         });
 
@@ -213,11 +212,38 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
                 title="Bina"
               >
                 <span>
-                  <img className="button-img" src="img/home.svg" />
+                  <img className="button-img" src="img/home.png" />
                 </span>
 
-                <div className="icon-text">Building</div>
+                <div className="icon-text">Bina</div>
               </button>
+
+              <button
+                className="action-button"
+                id="buildingBtn"
+                type="button"
+                title="Bina"
+              >
+                <span>
+                  <img className="button-img" src="img/floor.png" />
+                </span>
+
+                <div className="icon-text">Mərtəbə</div>
+              </button>
+
+              <button
+                className="action-button"
+                id="buildingBtn"
+                type="button"
+                title="Bina"
+              >
+                <span>
+                  <img className="button-img" src="img/object.png" />
+                </span>
+
+                <div className="icon-text">Obyekt</div>
+              </button>
+
               <button
                 className="action-button"
                 id="pointBtn"
@@ -225,10 +251,10 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
                 title="Adress"
               >
                 <span>
-                  <img className="button-img" src="img/location.svg" />
+                  <img className="button-img" src="img/location.png" />
                 </span>
 
-                <div className="icon-text">Loaction</div>
+                <div className="icon-text">Giriş</div>
               </button>
               <button
                 className="action-button"
@@ -237,10 +263,10 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
                 title="Yol"
               >
                 <span>
-                  <img className="button-img" src="img/road.svg" />
+                  <img className="button-img" src="img/road.png" />
                 </span>
 
-                <div className="icon-text">Road</div>
+                <div className="icon-text">Yol</div>
               </button>
               <button
                 className="action-button"
@@ -249,9 +275,9 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
                 title="Kəs"
               >
                 <span>
-                  <img className="button-img" src="img/cut.svg" />
+                  <img className="button-img" src="img/land.png" />
                 </span>
-                <div className="icon-text">Cut</div>
+                <div className="icon-text">Torpaq</div>
               </button>
             </div>
           </div>

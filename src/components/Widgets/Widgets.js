@@ -4,39 +4,37 @@ import Search from "@arcgis/core/widgets/Search";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import Expand from "@arcgis/core/widgets/Expand";
 import Measurement from "@arcgis/core/widgets/Measurement.js";
-
-
+import { Link } from "react-router-dom";
 
 import "./Widgets.css";
 
-const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
-
-  
-  var layer_visiblty = localStorage.getItem('layer_visiblty');
+const Widgets = ({ view, buildingLayer, pointLayer, lineLayer }) => {
+  var layer_visiblty = localStorage.getItem("layer_visiblty");
   var sample = {
-    showPolygon:false,
-    showPolyline:false,
-    showPoint:false
+    showPolygon: false,
+    showPolyline: false,
+    showPoint: false,
   };
-  if(layer_visiblty==null){
-    localStorage.setItem('layer_visiblty',JSON.stringify(sample));
-  }else{
-    sample=JSON.parse(layer_visiblty);
+  if (layer_visiblty == null) {
+    localStorage.setItem("layer_visiblty", JSON.stringify(sample));
+  } else {
+    sample = JSON.parse(layer_visiblty);
   }
 
   const widgetRef = useRef(null);
   const layersMenuRef = useRef(null); // create a ref for the layersMenu container
   const measurementDivRef = useRef(null); // create a ref for the layersMenu container
+  const serviceLayersDivRef = useRef(null);
 
   const [showPolygon, setShowPolygon] = useState(sample.showPolygon);
   const [showPolyline, setShowPolyline] = useState(sample.showPolyline);
   const [showPoint, setShowPoint] = useState(sample.showPoint);
   var moment1 = true;
 
-  const showHidePolygon = (layerName,status)=>{
+  const showHidePolygon = (layerName, status) => {
     debugger;
-    switch(layerName){
-      case 'polygon':{
+    switch (layerName) {
+      case "polygon": {
         setShowPolygon(status);
         if (status) {
           view.map.add(buildingLayer);
@@ -48,13 +46,13 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
         break;
       }
     }
-    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
-  }
+    localStorage.setItem("layer_visiblty", JSON.stringify(sample));
+  };
 
-  const showHidePoint = (layerName,status)=>{
+  const showHidePoint = (layerName, status) => {
     debugger;
-    switch(layerName){
-      case 'point':{
+    switch (layerName) {
+      case "point": {
         setShowPoint(status);
         if (status) {
           view.map.add(pointLayer);
@@ -66,14 +64,13 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
         break;
       }
     }
-    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
-  }
+    localStorage.setItem("layer_visiblty", JSON.stringify(sample));
+  };
 
-
-  const showHidePolyline = (layerName,status)=>{
+  const showHidePolyline = (layerName, status) => {
     debugger;
-    switch(layerName){
-      case 'polyline':{
+    switch (layerName) {
+      case "polyline": {
         setShowPolyline(status);
         if (status) {
           view.map.add(lineLayer);
@@ -85,9 +82,8 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
         break;
       }
     }
-    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
-  }
-
+    localStorage.setItem("layer_visiblty", JSON.stringify(sample));
+  };
 
   useEffect(() => {
     const home = new Home({
@@ -118,6 +114,15 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
     });
 
     view.ui.add(expand, "bottom-left");
+
+    const serviceLayers = new Expand({
+      view: view,
+      content: serviceLayersDivRef.current, // pass the ref to the layersMenu container
+      expandIconClass: "esri-icon-applications",
+      group: "top-right",
+    });
+
+    view.ui.add(serviceLayers, "bottom-left");
 
     const expandLayers = new Expand({
       view: view,
@@ -179,26 +184,26 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
     }
 
     debugger;
-    if(moment1){
-      if(sample.showPolyline){
-        showHidePolyline('polyline',true);
+    if (moment1) {
+      if (sample.showPolyline) {
+        showHidePolyline("polyline", true);
       }
 
-      if(sample.showPolygon){
-        showHidePolygon('polygon',true);
+      if (sample.showPolygon) {
+        showHidePolygon("polygon", true);
       }
-      if(sample.showPoint){
-        showHidePoint('point',true);
+      if (sample.showPoint) {
+        showHidePoint("point", true);
       }
       moment1 = false;
     }
-    
 
     return () => {
       home.destroy();
       search.destroy();
       basemapGallery.destroy();
       expand.destroy();
+      serviceLayers.destroy();
       expandLayers.destroy();
       measurementExpand.destroy();
       measurement.destroy();
@@ -208,8 +213,7 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
     };
   }, [view]);
 
- 
-  debugger
+  debugger;
   return (
     <>
       <div id="layersMenu" ref={layersMenuRef}>
@@ -217,35 +221,39 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
         {/* assign the ref to the container */}
         <div id="layers-container">
           <ul className="layers-list">
-          
             <li
               className={showPolygon ? "layers-item active" : "layers-item"}
-              onClick={() => showHidePolygon('polygon',!sample.showPolygon)} 
+              onClick={() => showHidePolygon("polygon", !sample.showPolygon)}
               id="polygon"
             >
               <span>
                 {" "}
-                <img className="layers-img" src="img/home.svg" />{" "}
+                <img className="layers-img" src="img/home.png" />{" "}
               </span>
               Polygon
             </li>
-            <li className={showPoint ? "layers-item active" : "layers-item"}
-              onClick={() => showHidePoint('point',!sample.showPoint)}  id="point">
+            <li
+              className={showPoint ? "layers-item active" : "layers-item"}
+              onClick={() => showHidePoint("point", !sample.showPoint)}
+              id="point"
+            >
               <span>
                 {" "}
-                <img className="layers-img" src="img/location.svg" />{" "}
+                <img className="layers-img" src="img/location.png" />{" "}
               </span>
               Point
             </li>
-            <li className={showPolyline ? "layers-item active" : "layers-item"}
-              onClick={() => showHidePolyline('polyline',!sample.showPolyline)} id="polyline">
+            <li
+              className={showPolyline ? "layers-item active" : "layers-item"}
+              onClick={() => showHidePolyline("polyline", !sample.showPolyline)}
+              id="polyline"
+            >
               <span>
                 {" "}
-                <img className="layers-img" src="img/road.svg" />{" "}
+                <img className="layers-img" src="img/road.png" />{" "}
               </span>
               Polyline
             </li>
-          
           </ul>
         </div>
       </div>
@@ -270,6 +278,22 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
           className="esri-widget--button esri-interactive esri-icon-trash"
           title="Clear Measurements"
         ></button>
+      </div>
+
+      <div id="serviceLayers" ref={serviceLayersDivRef}>
+        <ul className="serviceLayers-list">
+          <Link to="/wms">
+            <li className="serviceLayers-items">Web Map Services (WMS).</li>
+          </Link>
+          <Link to="/wmts">
+            <li className="serviceLayers-items">
+              Web Map Tile Services (WMTS)
+            </li>
+          </Link>
+          <Link to="/vectorTileLayer">
+            <li className="serviceLayers-items">VectorTileLayer</li>
+          </Link>
+        </ul>
       </div>
     </>
   );

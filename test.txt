@@ -1,0 +1,82 @@
+To add three different types (building, flat, and land) to the same FeatureLayer, you can follow these steps:
+
+Define a type field object with a name, alias, and type properties as shown in the previous example:
+go
+Copy code
+const typeField = {
+  name: "type",
+  alias: "Type",
+  type: "string"
+};
+Create a new FeatureLayer with the type field object included in the fields array property:
+less
+Copy code
+const featureLayer = new FeatureLayer({
+  url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/arcgis/rest/services/myFeatureService/FeatureServer/0",
+  outFields: ["*"],
+  objectIdField: "ObjectID",
+  geometryType: "polygon",
+  fields: [typeField]
+});
+To create new features with a type field, you can use the applyEdits method of the FeatureLayer:
+php
+Copy code
+featureLayer.applyEdits({
+  addFeatures: [{
+    geometry: {
+      type: "polygon",
+      rings: [
+        [
+          [-117.18, 34.06],
+          [-117.16, 34.06],
+          [-117.16, 34.08],
+          [-117.18, 34.08],
+          [-117.18, 34.06]
+        ]
+      ]
+    },
+    attributes: {
+      type: "building"
+    }
+  }, {
+    geometry: {
+      type: "polygon",
+      rings: [
+        [
+          [-117.16, 34.06],
+          [-117.14, 34.06],
+          [-117.14, 34.08],
+          [-117.16, 34.08],
+          [-117.16, 34.06]
+        ]
+      ]
+    },
+    attributes: {
+      type: "flat"
+    }
+  }, {
+    geometry: {
+      type: "polygon",
+      rings: [
+        [
+          [-117.14, 34.06],
+          [-117.12, 34.06],
+          [-117.12, 34.08],
+          [-117.14, 34.08],
+          [-117.14, 34.06]
+        ]
+      ]
+    },
+    attributes: {
+      type: "land"
+    }
+  }]
+});
+To filter features based on the type field, you can use a FeatureLayerView and the filter property:
+javascript
+Copy code
+view.whenLayerView(featureLayer).then(function(featureLayerView) {
+  featureLayerView.filter = {
+    where: "type IN ('building', 'flat', 'land')"
+  };
+});
