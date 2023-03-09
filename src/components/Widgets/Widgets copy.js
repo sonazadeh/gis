@@ -155,18 +155,25 @@ const Widgets = ({view ,buildingLayer,pointLayer,lineLayer}) => {
     setShowPolyline(!showPolyline);
     if (!showPolyline) {
       view.map.add(lineLayer);
+      sample.showPolyline = true;
     } else {
       view.map.remove(lineLayer);
+      sample.showPolyline = false;
+     
     }
+    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
   };
 
   const handleShowPoint = () => {
     setShowPoint(!showPoint);
     if (!showPoint) {
       view.map.add(pointLayer);
+      sample.showPoint = true;
     } else {
       view.map.remove(pointLayer);
+      sample.showPoint = false;
     }
+    localStorage.setItem('layer_visiblty', JSON.stringify(sample));
   };
 
   

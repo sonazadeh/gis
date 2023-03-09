@@ -1,22 +1,5 @@
 
-import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol.js";
 const FeatureLayers = () => {
-
- // create a new SimpleFillSymbol
- const symbol = new SimpleFillSymbol({
-  color: [255, 0, 0, 0.5],
-  outline: {
-    color: [0, 0, 0, 1],
-    width: 1,
-  },
-});
-
-// set the symbol on the buildingLayer
-buildingLayer.renderer = {
-  type: "simple",
-  symbol: symbol,
-};
-
 
   const buildingLayer = new FeatureLayer({
     url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/arcgis/rest/services/DevSummit_Polygons_Layer/FeatureServer/0",
