@@ -11,8 +11,10 @@ import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol.js";
 
 import "./Draw.css";
 
-function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
+function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) {
   const [showCreate, setShowCreate] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState(null);
+
   const handleShowCreate = () => {
     setShowCreate(!showCreate);
   };
@@ -35,11 +37,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
     },
   };
 
-  const pointSymbol = {
-    type: "simple-marker",
-    color: "#ef5350", // marker color
-    size: 10, // marker size
-  };
+  
 
   const lineSymbol = {
     type: "simple-line", // autocasts as new SimpleLineSymbol()
@@ -54,15 +52,34 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
       view: view,
     });
 
+    buildingLayer.on("click", (event) => {
+      const feature = event.features[0];
+      setSelectedFeature(feature.attributes.OBJECTID);
+    });
+  
+    const selectedSymbol = {
+      type: "simple-fill",
+      color: new Color("#FF0000"),
+      style: "solid",
+      outline: {
+        color: new Color("#FFFFFF"),
+        width: 1,
+      },
+    };
+
     const buildingBtn = document.getElementById("buildingBtn");
     const cutBtn = document.getElementById("cutBtn");
     const pointBtn = document.getElementById("pointBtn");
     const polylineBtn = document.getElementById("polylineBtn");
+    const landLayerBtn = document.getElementById("landLayer");
+
 
     buildingBtn.onclick = () => sketchVM.create("polygon");
     pointBtn.onclick = () => sketchVM.create("point");
     cutBtn.onclick = () => sketchVM.create("polyline");
     polylineBtn.onclick = () => sketchVM.create("polyline");
+    landLayerBtn.onclick = () => sketchVM.create("polygon");
+
 
     const createButton = document.getElementById("create-button");
     const createDelete = document.getElementById("create-delete");
@@ -93,6 +110,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
         }
       }
 
+
       console.log("created");
 
       // show the create button
@@ -103,6 +121,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
 
     sketchVM.on("create", (event) => {
       willsendData.type = event.tool;
+     
 
       if (event.state === "active") {
         // Hide the create button
@@ -119,14 +138,13 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
 
         var polygonGraphic = new Graphic({
           geometry: willsendData.feature.geometry,
-
           symbol: polygonSymbol,
         });
         drawedLayer.add(polygonGraphic);
 
         var pointGraphic = new Graphic({
           geometry: willsendData.feature.geometry,
-          symbol: pointSymbol,
+          
         });
 
         drawedLayer.add(pointGraphic);
@@ -183,6 +201,8 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
       pointBtn.onclick = null;
       cutBtn.onclick = null;
       polylineBtn.onclick = null;
+      landLayerBtn.onclick = null;
+
     };
   }, []);
 
@@ -270,14 +290,26 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer }) {
               </button>
               <button
                 className="action-button"
-                id="cutBtn"
+                id="landLayer"
                 type="button"
-                title="Kəs"
+                title="torpaq"
               >
                 <span>
                   <img className="button-img" src="img/land.png" />
                 </span>
                 <div className="icon-text">Torpaq</div>
+              </button>
+
+              <button
+                className="action-button"
+                id="cutBtn"
+                type="button"
+                title="Kəs"
+              >
+                <span>
+                  <img className="button-img" src="img/cut.svg" />
+                </span>
+                <div className="icon-text">Cut</div>
               </button>
             </div>
           </div>

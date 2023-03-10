@@ -39,11 +39,7 @@ const Maps = () => {
     }
   }, []);
 
-  const typeField = {
-    name: "type",
-    alias: "Type",
-    type: "string",
-  };
+  
 
   const buildingLayer = new FeatureLayer({
     url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/arcgis/rest/services/DevSummit_Polygons_Layer/FeatureServer/0",
@@ -53,7 +49,16 @@ const Maps = () => {
     geometryType: "polygon",
     outSpatialReference: { wkid: 3857 },
     returnGeometry: true,
-    fields: [typeField],
+  });
+
+  const landLayer = new FeatureLayer({
+    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/Landuse4/FeatureServer/0",
+    outFields: ["*"],
+    spatialReference: "3857",
+    objectIdField: "OBJECTID",
+    geometryType: "polygon",
+    outSpatialReference: { wkid: 3857 },
+    returnGeometry: true,
   });
 
   const lineLayer = new FeatureLayer({
@@ -76,6 +81,43 @@ const Maps = () => {
     returnGeometry: true,
   });
 
+  const buildingRenderer = new SimpleRenderer({
+    symbol: {
+      type: "simple-fill",
+      color: [255, 0, 0, 0.5], // red with 50% opacity
+    },
+  });
+  buildingLayer.renderer = buildingRenderer;
+  
+  const landRenderer = new SimpleRenderer({
+    symbol: {
+      type: "simple-fill",
+      color: [0, 255, 0, 0.5], // green with 50% opacity
+    },
+  });
+  landLayer.renderer = landRenderer;
+  
+  const lineRenderer = new SimpleRenderer({
+    symbol: {
+      type: "simple-line",
+      color: [0, 0, 255, 0.5], // blue with 50% opacity
+      width: 4,
+    },
+  });
+  lineLayer.renderer = lineRenderer;
+  
+  const pointRenderer = new SimpleRenderer({
+    symbol: {
+      type: "simple-marker",
+      color: [255, 255, 0, 0.5], // yellow with 50% opacity
+      size: 8,
+      style: "circle",
+    },
+  });
+  pointLayer.renderer = pointRenderer;
+
+  
+
   return (
     <>
       <div className="map-container">
@@ -90,6 +132,7 @@ const Maps = () => {
               buildingLayer={buildingLayer}
               lineLayer={lineLayer}
               pointLayer={pointLayer}
+              landLayer={landLayer}
             />
           )}
           {view && (
@@ -99,6 +142,7 @@ const Maps = () => {
               lineLayer={lineLayer}
               pointLayer={pointLayer}
               gLayer={gLayer}
+              landLayer={landLayer}
             />
           )}
         </div>

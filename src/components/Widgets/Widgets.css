@@ -110,27 +110,20 @@ li.active {
 
 .serviceLayers-list{
   padding: 10px 0;
-  text-decoration: none;
-  list-style-type: none;
+  
 }
 
-a{
-  list-style: none;
-  text-decoration: none;
-  cursor: pointer;
-
-}
 
 .serviceLayers-items{
   padding: 5px 10px;
   list-style-type: none;
   list-style: none;
   color: #000;
-  text-decoration: none;
+  cursor: pointer;
+ 
 }
 
 .serviceLayers-items:hover{
   background-color: bisque;
-  cursor: pointer;
 }
 

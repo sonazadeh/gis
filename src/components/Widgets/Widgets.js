@@ -8,12 +8,14 @@ import { Link } from "react-router-dom";
 
 import "./Widgets.css";
 
-const Widgets = ({ view, buildingLayer, pointLayer, lineLayer }) => {
+const Widgets = ({ view, buildingLayer, pointLayer, lineLayer ,landLayer}) => {
   var layer_visiblty = localStorage.getItem("layer_visiblty");
   var sample = {
     showPolygon: false,
     showPolyline: false,
     showPoint: false,
+    showLand: false,
+
   };
   if (layer_visiblty == null) {
     localStorage.setItem("layer_visiblty", JSON.stringify(sample));
@@ -29,6 +31,7 @@ const Widgets = ({ view, buildingLayer, pointLayer, lineLayer }) => {
   const [showPolygon, setShowPolygon] = useState(sample.showPolygon);
   const [showPolyline, setShowPolyline] = useState(sample.showPolyline);
   const [showPoint, setShowPoint] = useState(sample.showPoint);
+  const [showLand, setShowLand] = useState(sample.showLand);
   var moment1 = true;
 
   const showHidePolygon = (layerName, status) => {
@@ -78,6 +81,25 @@ const Widgets = ({ view, buildingLayer, pointLayer, lineLayer }) => {
         } else {
           view.map.remove(lineLayer);
           sample.showPolyline = false;
+        }
+        break;
+      }
+    }
+    localStorage.setItem("layer_visiblty", JSON.stringify(sample));
+  };
+
+
+  const showHideLand = (layerName, status) => {
+    debugger;
+    switch (layerName) {
+      case "land": {
+        setShowLand(status);
+        if (status) {
+          view.map.add(landLayer);
+          sample.showLand = true;
+        } else {
+          view.map.remove(landLayer);
+          sample.showLand = false;
         }
         break;
       }
@@ -195,6 +217,9 @@ const Widgets = ({ view, buildingLayer, pointLayer, lineLayer }) => {
       if (sample.showPoint) {
         showHidePoint("point", true);
       }
+      if (sample.showLand) {
+        showHideLand("land", true);
+      }
       moment1 = false;
     }
 
@@ -230,7 +255,7 @@ const Widgets = ({ view, buildingLayer, pointLayer, lineLayer }) => {
                 {" "}
                 <img className="layers-img" src="img/home.png" />{" "}
               </span>
-              Polygon
+              Bina
             </li>
             <li
               className={showPoint ? "layers-item active" : "layers-item"}
@@ -241,7 +266,7 @@ const Widgets = ({ view, buildingLayer, pointLayer, lineLayer }) => {
                 {" "}
                 <img className="layers-img" src="img/location.png" />{" "}
               </span>
-              Point
+              Giriş
             </li>
             <li
               className={showPolyline ? "layers-item active" : "layers-item"}
@@ -252,7 +277,19 @@ const Widgets = ({ view, buildingLayer, pointLayer, lineLayer }) => {
                 {" "}
                 <img className="layers-img" src="img/road.png" />{" "}
               </span>
-              Polyline
+              Yol
+            </li>
+
+            <li
+              className={showLand ? "layers-item active" : "layers-item"}
+              onClick={() => showHideLand("land", !sample.showLand)}
+              id="land"
+            >
+              <span>
+                {" "}
+                <img className="layers-img" src="img/land.png" />{" "}
+              </span>
+              Torpaq
             </li>
           </ul>
         </div>
