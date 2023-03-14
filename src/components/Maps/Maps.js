@@ -10,6 +10,54 @@ import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
 
 import "./Maps.css";
 
+const buildingLayer = new FeatureLayer({
+  url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/arcgis/rest/services/DevSummit_Polygons_Layer/FeatureServer/0",
+  outFields: ["*"],
+  spatialReference: "3857",
+  objectIdField: "OBJECTID",
+  geometryType: "polygon",
+  outSpatialReference: { wkid: 3857 },
+  returnGeometry: true,
+  zIndex:3
+
+});
+
+const landLayer = new FeatureLayer({
+  url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/Landuse4/FeatureServer/0",
+  outFields: ["*"],
+  spatialReference: "3857",
+  objectIdField: "OBJECTID",
+  geometryType: "polygon",
+  outSpatialReference: { wkid: 3857 },
+  returnGeometry: true,
+  zIndex:1
+
+});
+
+const lineLayer = new FeatureLayer({
+  url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/1",
+  outFields: ["*"],
+  spatialReference: "3857",
+  objectIdField: "OBJECTID",
+  geometryType: "polyline",
+  outSpatialReference: { wkid: 3857 },
+  returnGeometry: true,
+  zIndex:2
+
+});
+
+const pointLayer = new FeatureLayer({
+  url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/0",
+  outFields: ["*"],
+  spatialReference: "3857",
+  objectIdField: "OBJECTID",
+  geometryType: "point",
+  outSpatialReference: { wkid: 3857 },
+  returnGeometry: true,
+  zIndex:4
+  
+});
+
 const Maps = () => {
   const mapRef = useRef(null);
   const effectRun = useRef(false);
@@ -33,6 +81,8 @@ const Maps = () => {
         center: [-77.60688884872243, 43.1585128643808],
       });
 
+    
+
       view.when((view) => {
         setView(view);
       });
@@ -41,50 +91,16 @@ const Maps = () => {
 
   
 
-  const buildingLayer = new FeatureLayer({
-    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/arcgis/rest/services/DevSummit_Polygons_Layer/FeatureServer/0",
-    outFields: ["*"],
-    spatialReference: "3857",
-    objectIdField: "OBJECTID",
-    geometryType: "polygon",
-    outSpatialReference: { wkid: 3857 },
-    returnGeometry: true,
-  });
-
-  const landLayer = new FeatureLayer({
-    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/Landuse4/FeatureServer/0",
-    outFields: ["*"],
-    spatialReference: "3857",
-    objectIdField: "OBJECTID",
-    geometryType: "polygon",
-    outSpatialReference: { wkid: 3857 },
-    returnGeometry: true,
-  });
-
-  const lineLayer = new FeatureLayer({
-    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/1",
-    outFields: ["*"],
-    spatialReference: "3857",
-    objectIdField: "OBJECTID",
-    geometryType: "polyline",
-    outSpatialReference: { wkid: 3857 },
-    returnGeometry: true,
-  });
-
-  const pointLayer = new FeatureLayer({
-    url: "https://servicesdev1.arcgis.com/5uh3wwYLNzBuU0Eu/ArcGIS/rest/services/DevSummitTestLayers/FeatureServer/0",
-    outFields: ["*"],
-    spatialReference: "3857",
-    objectIdField: "OBJECTID",
-    geometryType: "point",
-    outSpatialReference: { wkid: 3857 },
-    returnGeometry: true,
-  });
+ 
 
   const buildingRenderer = new SimpleRenderer({
     symbol: {
       type: "simple-fill",
-      color: [255, 0, 0, 0.5], // red with 50% opacity
+      color: [90, 161, 249, 0.3], // red with 50% opacity
+      outline:{
+        color:[60, 143, 250],
+        width:1
+      }
     },
   });
   buildingLayer.renderer = buildingRenderer;
@@ -92,7 +108,11 @@ const Maps = () => {
   const landRenderer = new SimpleRenderer({
     symbol: {
       type: "simple-fill",
-      color: [0, 255, 0, 0.5], // green with 50% opacity
+      color: [248, 239, 207, 0.5], // red with 50% opacity
+      outline:{
+        color:[251, 172, 150],
+        width:1
+      }
     },
   });
   landLayer.renderer = landRenderer;
@@ -100,8 +120,9 @@ const Maps = () => {
   const lineRenderer = new SimpleRenderer({
     symbol: {
       type: "simple-line",
-      color: [0, 0, 255, 0.5], // blue with 50% opacity
+      color: [207, 159, 1], // blue with 50% opacity
       width: 4,
+     
     },
   });
   lineLayer.renderer = lineRenderer;
@@ -109,7 +130,7 @@ const Maps = () => {
   const pointRenderer = new SimpleRenderer({
     symbol: {
       type: "simple-marker",
-      color: [255, 255, 0, 0.5], // yellow with 50% opacity
+      color: [254, 127, 120], // yellow with 50% opacity
       size: 8,
       style: "circle",
     },

@@ -11,7 +11,14 @@ import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol.js";
 
 import "./Draw.css";
 
-function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) {
+function Draw({
+  view,
+  buildingLayer,
+  pointLayer,
+  lineLayer,
+  gLayer,
+  landLayer,
+}) {
   const [showCreate, setShowCreate] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
 
@@ -21,6 +28,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
 
   var drawedLayer = new GraphicsLayer({
     visible: true,
+    elevationInfo: { mode: "relative-to-ground", offset: 0.5 },
   });
   var selectedFeture = null;
   var editFeature = null;
@@ -36,8 +44,6 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
       width: 2,
     },
   };
-
-  
 
   const lineSymbol = {
     type: "simple-line", // autocasts as new SimpleLineSymbol()
@@ -56,16 +62,16 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
       const feature = event.features[0];
       setSelectedFeature(feature.attributes.OBJECTID);
     });
-  
-    const selectedSymbol = {
-      type: "simple-fill",
-      color: new Color("#FF0000"),
-      style: "solid",
-      outline: {
-        color: new Color("#FFFFFF"),
-        width: 1,
-      },
-    };
+
+    // const selectedSymbol = {
+    //   type: "simple-fill",
+    //   color: new Color("#FF0000"),
+    //   style: "solid",
+    //   outline: {
+    //     color: new Color("#FFFFFF"),
+    //     width: 1,
+    //   },
+    // };
 
     const buildingBtn = document.getElementById("buildingBtn");
     const cutBtn = document.getElementById("cutBtn");
@@ -73,45 +79,70 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
     const polylineBtn = document.getElementById("polylineBtn");
     const landLayerBtn = document.getElementById("landLayer");
 
-
     buildingBtn.onclick = () => sketchVM.create("polygon");
     pointBtn.onclick = () => sketchVM.create("point");
     cutBtn.onclick = () => sketchVM.create("polyline");
     polylineBtn.onclick = () => sketchVM.create("polyline");
     landLayerBtn.onclick = () => sketchVM.create("polygon");
 
-
     const createButton = document.getElementById("create-button");
     const createDelete = document.getElementById("create-delete");
     const createDraw = document.getElementById("create-draw");
 
+    // Define variables for the current layer and its corresponding button
+    let currentLayer = landLayer;
+    let currentLayerBtn = landLayerBtn;
+
+    // Add click event listeners to the land and building buttons
+    landLayerBtn.addEventListener("click", function () {
+      // Update the current layer and button
+      currentLayer = landLayer;
+      currentLayerBtn = landLayerBtn;
+    });
+
+    buildingBtn.addEventListener("click", function () {
+      // Update the current layer and button
+      currentLayer = buildingLayer;
+      currentLayerBtn = buildingBtn;
+    });
+
+    polylineBtn.addEventListener("click", function () {
+      // Update the current layer and button
+      currentLayer = lineLayer;
+      currentLayerBtn = polylineBtn;
+    });
+
+    pointBtn.addEventListener("click", function () {
+      // Update the current layer and button
+      currentLayer = pointLayer;
+      currentLayerBtn = pointBtn;
+      createButton.style.display = "none";
+      // Show the delete button
+      createDelete.style.display = "flex";
+    });
+
+
     createDraw.addEventListener("click", function () {
       debugger;
-      if (willsendData.type === "polygon") {
-        if (willsendData.status == false) {
-          gLayer.removeAll();
-          drawedLayer.removeAll();
-          buildingLayer.applyEdits({ addFeatures: [willsendData.feature] });
-          willsendData = { status: false, type: "", feature: null };
-        }
-      } else if (willsendData.type === "point") {
-        if (willsendData.status == false) {
-          gLayer.removeAll();
-          drawedLayer.removeAll();
-          pointLayer.applyEdits({ addFeatures: [willsendData.feature] });
-          willsendData = { status: false, type: "", feature: null };
-        }
-      } else if (willsendData.type === "polyline") {
-        if (willsendData.status == false) {
-          gLayer.removeAll();
-          drawedLayer.removeAll();
-          lineLayer.applyEdits({ addFeatures: [willsendData.feature] });
-          willsendData = { status: false, type: "", feature: null };
-        }
-      }
-
-
+      if (willsendData.status == false) {
+        gLayer.removeAll();
+        drawedLayer.removeAll();
+        currentLayer.applyEdits({ addFeatures: [willsendData.feature] });
+        willsendData = { status: false, type: "", feature: null };
+        createButton.style.display = "block";
+      // Show the delete button
+      createDelete.style.display = "none";
+      } 
       console.log("created");
+
+      
+    });
+
+    
+
+    createDelete.addEventListener("click", function() {
+      gLayer.removeAll();
+      drawedLayer.removeAll();
 
       // show the create button
       createButton.style.display = "block";
@@ -121,7 +152,6 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
 
     sketchVM.on("create", (event) => {
       willsendData.type = event.tool;
-     
 
       if (event.state === "active") {
         // Hide the create button
@@ -144,7 +174,6 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
 
         var pointGraphic = new Graphic({
           geometry: willsendData.feature.geometry,
-          
         });
 
         drawedLayer.add(pointGraphic);
@@ -159,10 +188,17 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
 
         view.map.add(drawedLayer);
 
+        var landGraphic = new Graphic({
+          geometry: willsendData.feature.geometry,
+          symbol: polygonSymbol,
+        });
+
+        drawedLayer.add(landGraphic);
+
         if (event.tool === "polyline" && selectedFeture !== null) {
           const geometrys = geometryEngine.cut(
             selectedFeture,
-            event.graphic.geometry
+            event.graphic.geometry,
           );
 
           buildingLayer
@@ -190,6 +226,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
             });
         }
       }
+
       // remove event listener after polygon is added to layer
       createDraw.removeEventListener("click", function () {});
     });
@@ -202,7 +239,6 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
       cutBtn.onclick = null;
       polylineBtn.onclick = null;
       landLayerBtn.onclick = null;
-
     };
   }, []);
 
@@ -226,7 +262,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
             <div className="button-title">What do you want to create?</div>
             <div id="button-container">
               <button
-                className="action-button"
+                className="action-button building"
                 id="buildingBtn"
                 type="button"
                 title="Bina"
@@ -237,9 +273,8 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
 
                 <div className="icon-text">Bina</div>
               </button>
-
               <button
-                className="action-button"
+                className="action-button building"
                 id="buildingBtn"
                 type="button"
                 title="Bina"
@@ -250,12 +285,11 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
 
                 <div className="icon-text">Mərtəbə</div>
               </button>
-
               <button
-                className="action-button"
-                id="buildingBtn"
+                className="action-button building"
+                id="objectBtn"
                 type="button"
-                title="Bina"
+                title="Obyekt"
               >
                 <span>
                   <img className="button-img" src="img/object.png" />
@@ -293,6 +327,7 @@ function Draw({ view, buildingLayer, pointLayer, lineLayer, gLayer,landLayer }) 
                 id="landLayer"
                 type="button"
                 title="torpaq"
+                value="land"
               >
                 <span>
                   <img className="button-img" src="img/land.png" />

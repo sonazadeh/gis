@@ -34,6 +34,47 @@ const Widgets = ({ view, buildingLayer, pointLayer, lineLayer ,landLayer}) => {
   const [showLand, setShowLand] = useState(sample.showLand);
   var moment1 = true;
 
+  const showHideLand = (layerName, status) => {
+    debugger;
+    switch (layerName) {
+      case "land": {
+        setShowLand(status);
+        if (status) {
+          view.map.add(landLayer);
+          sample.showLand = true;
+
+        } else {
+          view.map.remove(landLayer);
+          sample.showLand = false;
+        }
+        break;
+      }
+    }
+    localStorage.setItem("layer_visiblty", JSON.stringify(sample));
+  };
+
+ 
+
+ 
+
+  const showHidePolyline = (layerName, status) => {
+    debugger;
+    switch (layerName) {
+      case "polyline": {
+        setShowPolyline(status);
+        if (status) {
+          view.map.add(lineLayer);
+          sample.showPolyline = true;
+        } else {
+          view.map.remove(lineLayer);
+          sample.showPolyline = false;
+        }
+        break;
+      }
+    }
+    localStorage.setItem("layer_visiblty", JSON.stringify(sample));
+  };
+
   const showHidePolygon = (layerName, status) => {
     debugger;
     switch (layerName) {
@@ -69,43 +110,7 @@ const Widgets = ({ view, buildingLayer, pointLayer, lineLayer ,landLayer}) => {
     }
     localStorage.setItem("layer_visiblty", JSON.stringify(sample));
   };
-
-  const showHidePolyline = (layerName, status) => {
-    debugger;
-    switch (layerName) {
-      case "polyline": {
-        setShowPolyline(status);
-        if (status) {
-          view.map.add(lineLayer);
-          sample.showPolyline = true;
-        } else {
-          view.map.remove(lineLayer);
-          sample.showPolyline = false;
-        }
-        break;
-      }
-    }
-    localStorage.setItem("layer_visiblty", JSON.stringify(sample));
-  };
-
-
-  const showHideLand = (layerName, status) => {
-    debugger;
-    switch (layerName) {
-      case "land": {
-        setShowLand(status);
-        if (status) {
-          view.map.add(landLayer);
-          sample.showLand = true;
-        } else {
-          view.map.remove(landLayer);
-          sample.showLand = false;
-        }
-        break;
-      }
-    }
-    localStorage.setItem("layer_visiblty", JSON.stringify(sample));
-  };
+  
 
   useEffect(() => {
     const home = new Home({
